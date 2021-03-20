@@ -102,6 +102,14 @@ func main() {
 		return
 	}
 
+	// smoothstreams
+	_, err = smoothstreams.New(cfg.SmoothStreams)
+	if err != nil {
+		log.Fatal().
+			Err(err).
+			Msg("Failed initialising smoothstreams")
+	}
+
 	// display initialised banner
 	log.Info().
 		Str("version", fmt.Sprintf("%s (%s@%s)", build.Version, build.GitCommit, build.Timestamp)).
