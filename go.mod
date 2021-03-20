@@ -6,6 +6,7 @@ require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/alecthomas/kong v0.2.16
 	github.com/blang/semver v3.5.1+incompatible
+	github.com/gin-gonic/gin v1.6.3
 	github.com/goccy/go-yaml v1.8.9
 	github.com/lucperkins/rek v0.1.3
 	github.com/natefinch/lumberjack v2.0.0+incompatible

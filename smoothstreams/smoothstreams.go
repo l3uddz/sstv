@@ -3,6 +3,7 @@ package smoothstreams
 import (
 	"fmt"
 	"github.com/l3uddz/sstv/logger"
+	"github.com/l3uddz/sstv/smoothstreams/stream"
 	"github.com/l3uddz/sstv/smoothstreams/token"
 	"github.com/rs/zerolog"
 )
@@ -17,7 +18,8 @@ type Config struct {
 }
 
 type Client struct {
-	token *token.Client
+	Token  *token.Client
+	Stream *stream.Client
 
 	log zerolog.Logger
 }
@@ -32,7 +34,9 @@ func New(c Config) (*Client, error) {
 	}
 
 	return &Client{
-		token: t,
-		log:   l,
+		Token:  t,
+		Stream: stream.New(c.Site, c.Server, t, l),
+
+		log: l,
 	}, nil
 }

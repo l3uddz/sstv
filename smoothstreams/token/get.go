@@ -14,15 +14,12 @@ func (c *Client) Get() (string, error) {
 	c.mtx.Lock()
 	defer c.mtx.Unlock()
 
-	// existing token still valid?
+	// check stored token
 	if c.hash != "" && time.Now().UTC().Before(c.expiry.UTC()) {
-		c.log.Trace().
-			Time("expires", c.expiry).
-			Msg("Re-using existing token")
 		return c.hash, nil
 	}
 
-	// get token url
+	// generate token request url
 	tokenUrl, err := sstv.URLWithQuery(c.authUrl(), url.Values{
 		"username": []string{c.Username},
 		"password": []string{c.Password},
@@ -43,12 +40,12 @@ func (c *Client) Get() (string, error) {
 	}
 	defer resp.Body().Close()
 
-	// validate response
+	// validate token response
 	if resp.StatusCode() != 200 {
 		return c.hash, fmt.Errorf("validate token response: %s", resp.Status())
 	}
 
-	// decode response
+	// decode token response
 	b := new(struct {
 		Hash  string `json:"hash"`
 		Valid int    `json:"valid"`
@@ -62,7 +59,7 @@ func (c *Client) Get() (string, error) {
 		return c.hash, fmt.Errorf("validate token response hash: %+v", *b)
 	}
 
-	// update token
+	// update stored token
 	c.hash = b.Hash
 	c.code = b.Code
 	if b.Valid >= 10 {
