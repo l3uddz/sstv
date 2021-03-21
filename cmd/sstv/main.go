@@ -14,7 +14,6 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"os/signal"
@@ -129,7 +128,6 @@ func main() {
 
 	// web server
 	gin.SetMode(gin.ReleaseMode)
-	gin.DefaultWriter = ioutil.Discard
 
 	r := gin.New()
 	wc := web.New(ss)
@@ -171,7 +169,7 @@ func main() {
 			Err(err).
 			Msg("Failed graceful webserver shutdown")
 	}
-	// catching ctx.Done(). timeout of 5 seconds.
+
 	select {
 	case <-sctx.Done():
 		break

@@ -28,39 +28,40 @@ func (c *Client) SetHandlers(r *gin.Engine) {
 
 func (c *Client) Logger() gin.HandlerFunc {
 	return func(g *gin.Context) {
-		t := time.Now()
 		// before
+		rl := c.log.With().
+			Str("ip", g.ClientIP()).
+			Str("uri", g.Request.RequestURI).
+			Logger()
+
+		rl.Info().Msg("Request received")
+
+		t := time.Now()
 		g.Next()
+
 		// after
 		l := time.Since(t)
-
 		if g.Request == nil {
 			return
 		}
 
-		// errors
 		if len(g.Errors) > 0 {
 			errors := make([]error, 0)
 			for _, err := range g.Errors {
 				errors = append(errors, err.Err)
 			}
 
-			c.log.Error().
+			rl.Error().
 				Errs("errors", errors).
-				Str("url", g.Request.RequestURI).
 				Int("status", g.Writer.Status()).
-				Str("ip", g.ClientIP()).
-				Str("latency", l.String()).
+				Str("duration", l.String()).
 				Msg("Request failed")
 			return
 		}
 
-		// processed
-		c.log.Info().
-			Str("url", g.Request.RequestURI).
+		rl.Debug().
 			Int("status", g.Writer.Status()).
-			Str("ip", g.ClientIP()).
-			Str("latency", l.String()).
+			Str("duration", l.String()).
 			Msg("Request processed")
 	}
 }

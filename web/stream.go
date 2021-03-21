@@ -4,6 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/l3uddz/sstv/smoothstreams/stream"
+	"github.com/lucperkins/rek"
+	"io"
 	"net/http"
 )
 
@@ -34,6 +37,27 @@ func (c *Client) Stream(g *gin.Context) {
 	}
 
 	// redirect to stream link
-	g.Redirect(http.StatusTemporaryRedirect, cl)
-	return
+	if !c.ss.ProxyStreams {
+		g.Redirect(http.StatusTemporaryRedirect, cl)
+		return
+	} else if b.Type != stream.MPEG2TS {
+		// we can only proxy MPEG2TS streams
+		g.AbortWithError(http.StatusUnsupportedMediaType, errors.New("stream type cannot be proxied"))
+		return
+	}
+
+	// proxy stream link
+	resp, err := rek.Get(cl)
+	if err != nil {
+		g.AbortWithError(http.StatusInternalServerError, fmt.Errorf("get proxy stream: %w", err))
+		return
+	}
+
+	if resp.StatusCode() != http.StatusOK {
+		g.AbortWithError(http.StatusServiceUnavailable, fmt.Errorf("get proxy stream: %s", resp.Status()))
+		return
+	}
+
+	g.Writer.Header().Set("Content-Type", resp.ContentType())
+	_, _ = io.Copy(g.Writer, resp.Body())
 }

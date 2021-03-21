@@ -10,15 +10,18 @@ import (
 )
 
 type Config struct {
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
-	Site     string `yaml:"site"`
-	Server   string `yaml:"server"`
+	Username    string `yaml:"username"`
+	Password    string `yaml:"password"`
+	Site        string `yaml:"site"`
+	Server      string `yaml:"server"`
+	ProxyStream bool   `yaml:"proxy_stream"`
 
 	Verbosity string `yaml:"verbosity"`
 }
 
 type Client struct {
+	ProxyStreams bool
+
 	Token  *token.Client
 	Guide  *guide.Client
 	Stream *stream.Client
@@ -36,6 +39,8 @@ func New(c Config, publicURL string) (*Client, error) {
 	}
 
 	return &Client{
+		ProxyStreams: c.ProxyStream,
+
 		Token:  t,
 		Guide:  guide.New(publicURL, l),
 		Stream: stream.New(c.Site, c.Server, t, l),
