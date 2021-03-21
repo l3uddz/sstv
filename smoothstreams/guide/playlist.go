@@ -3,7 +3,7 @@ package guide
 import (
 	"fmt"
 	"github.com/l3uddz/sstv"
-	"github.com/l3uddz/sstv/util"
+	"github.com/l3uddz/sstv/smoothstreams/util"
 	"strings"
 )
 
@@ -24,7 +24,7 @@ func (c *Client) GeneratePlaylist() (string, error) {
 		}
 
 		if name == "" {
-			name = "Unknown"
+			name = fmt.Sprintf("Channel %s", channel.Number)
 		}
 
 		// prepare channel logo
