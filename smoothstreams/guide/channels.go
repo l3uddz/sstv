@@ -9,9 +9,21 @@ import (
 )
 
 type Channel struct {
-	Number string `json:"channel_id"`
-	Name   string `json:"name"`
-	Image  string `json:"img"`
+	Number     string      `json:"channel_id"`
+	Name       string      `json:"name"`
+	Image      string      `json:"img"`
+	Programmes []Programme `json:"items,omitempty"`
+}
+
+type Programme struct {
+	Id          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Language    string `json:"language"`
+	StartTime   string `json:"time"`
+	EndTime     string `json:"end_time"`
+	Channel     string `json:"channel"`
+	Category    string `json:"category"`
 }
 
 func (c *Client) GetChannels() ([]Channel, error) {

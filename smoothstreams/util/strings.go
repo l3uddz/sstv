@@ -18,7 +18,7 @@ func init() {
 	reSmoothStreamsChannelName = reg1
 }
 
-func SanitizeChannelName(value string) string {
+func SanitizeString(value string) string {
 	v := html.UnescapeString(value)
 	return strings.TrimSpace(reSmoothStreamsChannelName.ReplaceAllString(v, ""))
 }

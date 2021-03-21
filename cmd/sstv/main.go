@@ -38,7 +38,7 @@ var (
 		Verbosity int    `type:"counter" default:"0" short:"v" env:"APP_VERBOSITY" help:"Log level verbosity"`
 
 		Host string `type:"string" default:"0.0.0.0" short:"h" env:"APP_HOST" help:"Host to listen on"`
-		Port int    `type:"number" default:"8080" short:"p" env:"APP_PORT" help:"Port to listen on"`
+		Port int    `type:"number" default:"1411" short:"p" env:"APP_PORT" help:"Port to listen on"`
 	}
 )
 
