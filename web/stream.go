@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/l3uddz/sstv/smoothstreams/guide"
 	"github.com/l3uddz/sstv/smoothstreams/stream"
 	"github.com/lucperkins/rek"
 	"io"
@@ -13,8 +14,8 @@ import (
 func (c *Client) Stream(g *gin.Context) {
 	// parse query
 	b := new(struct {
+		guide.PlaylistOptions
 		Channel int `form:"channel"`
-		Type    int `form:"type,omitempty"`
 	})
 
 	if err := g.ShouldBindQuery(b); err != nil {
@@ -37,7 +38,7 @@ func (c *Client) Stream(g *gin.Context) {
 	}
 
 	// redirect to stream link
-	if !c.ss.ProxyStreams {
+	if !b.Proxy {
 		g.Redirect(http.StatusTemporaryRedirect, cl)
 		return
 	} else if b.Type != stream.MPEG2TS {

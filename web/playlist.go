@@ -3,14 +3,13 @@ package web
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/l3uddz/sstv/smoothstreams/guide"
 	"net/http"
 )
 
 func (c *Client) Playlist(g *gin.Context) {
 	// parse query
-	b := new(struct {
-		Type int `form:"type,omitempty"`
-	})
+	b := new(guide.PlaylistOptions)
 
 	if err := g.ShouldBindQuery(b); err != nil {
 		g.AbortWithError(http.StatusBadRequest, fmt.Errorf("bind query: %w", err))
@@ -18,7 +17,7 @@ func (c *Client) Playlist(g *gin.Context) {
 	}
 
 	// generate playlist
-	playlist, err := c.ss.Guide.GeneratePlaylist(b.Type)
+	playlist, err := c.ss.Guide.GeneratePlaylist(b)
 	if err != nil {
 		g.AbortWithError(http.StatusInternalServerError, fmt.Errorf("generate playlist: %w", err))
 	}
