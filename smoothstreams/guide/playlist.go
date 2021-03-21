@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func (c *Client) GeneratePlaylist() (string, error) {
+func (c *Client) GeneratePlaylist(streamType int) (string, error) {
 	// retrieve channels
 	channels, err := c.GetChannels()
 	if err != nil {
@@ -37,7 +37,8 @@ func (c *Client) GeneratePlaylist() (string, error) {
 		data = append(data, fmt.Sprintf(
 			"#EXTINF:-1 tvg-id=%q tvg-name=%q tvg-logo=%q tvg-chno=%q channel-id=%q group-title=%q,%s",
 			channel.Number, name, logo, channel.Number, channel.Number, "SmoothStreams", name))
-		data = append(data, sstv.JoinURL(c.publicURL, fmt.Sprintf("stream.m3u8?channel=%s", channel.Number)))
+		data = append(data, sstv.JoinURL(c.publicURL,
+			fmt.Sprintf("stream.m3u8?channel=%s&type=%d", channel.Number, streamType)))
 	}
 
 	return strings.Join(data, "\n"), nil
