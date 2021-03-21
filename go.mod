@@ -5,6 +5,7 @@ go 1.16
 require (
 	github.com/alecthomas/kong v0.2.16
 	github.com/blang/semver v3.5.1+incompatible
+	github.com/dustin/go-humanize v1.0.0
 	github.com/gin-gonic/gin v1.6.3
 	github.com/goccy/go-yaml v1.8.9
 	github.com/golang/protobuf v1.5.1 // indirect

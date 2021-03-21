@@ -1,6 +1,7 @@
 package web
 
 import (
+	"github.com/dustin/go-humanize"
 	"github.com/gin-gonic/gin"
 	"github.com/l3uddz/sstv/logger"
 	"github.com/l3uddz/sstv/smoothstreams"
@@ -34,7 +35,7 @@ func (c *Client) Logger() gin.HandlerFunc {
 			Str("uri", g.Request.RequestURI).
 			Logger()
 
-		rl.Info().Msg("Request received")
+		rl.Debug().Msg("Request received")
 
 		t := time.Now()
 		g.Next()
@@ -59,7 +60,8 @@ func (c *Client) Logger() gin.HandlerFunc {
 			return
 		}
 
-		rl.Debug().
+		rl.Info().
+			Str("size", humanize.IBytes(uint64(g.Writer.Size()))).
 			Int("status", g.Writer.Status()).
 			Str("duration", l.String()).
 			Msg("Request processed")

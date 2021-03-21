@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	reSmoothStreamsChannelname *regexp.Regexp
+	reSmoothStreamsChannelName *regexp.Regexp
 )
 
 func init() {
@@ -15,10 +15,10 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	reSmoothStreamsChannelname = reg1
+	reSmoothStreamsChannelName = reg1
 }
 
 func SanitizeChannelName(value string) string {
 	v := html.UnescapeString(value)
-	return strings.TrimSpace(reSmoothStreamsChannelname.ReplaceAllString(v, ""))
+	return strings.TrimSpace(reSmoothStreamsChannelName.ReplaceAllString(v, ""))
 }
