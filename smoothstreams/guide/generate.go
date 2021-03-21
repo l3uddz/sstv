@@ -1,6 +1,7 @@
 package guide
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/beevik/etree"
 	"github.com/l3uddz/sstv"
@@ -48,6 +49,75 @@ func (c *Client) GeneratePlaylist(opts *PlaylistOptions) (string, error) {
 	}
 
 	return strings.Join(data, "\n"), nil
+}
+
+func (c *Client) GenerateLineup(opts *PlaylistOptions) (string, error) {
+	type lineup struct {
+		GuideNumber string
+		GuideName   string
+		URL         string
+	}
+
+	// retrieve channels
+	channels, err := c.GetChannels()
+	if err != nil {
+		return "", fmt.Errorf("get channels: %w", err)
+	}
+
+	// generate lineup
+	data := make([]lineup, 0)
+	for _, channel := range channels {
+		// prepare channel name
+		name := util.SanitizeString(channel.Name)
+		if strings.Index(name, " - ") >= 0 {
+			name = strings.TrimSpace(name[strings.Index(name, " - ")+3:])
+		}
+
+		if name == "" {
+			name = fmt.Sprintf("Channel %s", channel.Number)
+		}
+
+		// add channel to lineup
+		data = append(data, lineup{
+			GuideNumber: channel.Number,
+			GuideName:   name,
+			URL: sstv.JoinURL(c.publicURL,
+				fmt.Sprintf("stream.m3u8?channel=%s&type=%d&plex=1", channel.Number, opts.Type)),
+		})
+	}
+
+	// marshal
+	b, err := json.Marshal(data)
+	if err != nil {
+		return "", fmt.Errorf("marshal lineup: %w", err)
+	}
+
+	return string(b), nil
+}
+
+func (c *Client) GenerateLineupStatus() (string, error) {
+	type lineupStatus struct {
+		ScanInProgress int
+		ScanPossible   int
+		Source         string
+		SourceList     []string
+	}
+
+	// generate lineup status
+	data := &lineupStatus{
+		ScanInProgress: 0,
+		ScanPossible:   1,
+		Source:         "Cable",
+		SourceList:     []string{"Cable"},
+	}
+
+	// marshal
+	b, err := json.Marshal(data)
+	if err != nil {
+		return "", fmt.Errorf("marshal lineup_status: %w", err)
+	}
+
+	return string(b), nil
 }
 
 type EpgOptions struct {

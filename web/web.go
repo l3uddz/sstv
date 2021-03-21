@@ -23,9 +23,13 @@ func New(ss *smoothstreams.Client) *Client {
 }
 
 func (c *Client) SetHandlers(r *gin.Engine) {
+	// core
 	r.GET("/playlist.m3u8", c.Playlist)
 	r.GET("/stream.m3u8", c.Stream)
 	r.GET("/epg.xml", c.EPG)
+	// plex
+	r.GET("/lineup.json", c.Lineup)
+	r.GET("/lineup_status.json", c.LineupStatus)
 }
 
 func (c *Client) Logger() gin.HandlerFunc {
