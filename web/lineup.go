@@ -34,3 +34,7 @@ func (c *Client) LineupStatus(g *gin.Context) {
 	// return lineup_status
 	g.Data(http.StatusOK, "application/json; charset=utf-8", []byte(lineupStatus))
 }
+
+func (c *Client) LineupPost(g *gin.Context) {
+	g.String(http.StatusOK, "")
+}

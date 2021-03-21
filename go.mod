@@ -7,6 +7,7 @@ require (
 	github.com/beevik/etree v1.1.0
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/dustin/go-humanize v1.0.0
+	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.6.3
 	github.com/goccy/go-yaml v1.8.9
 	github.com/golang/protobuf v1.5.1 // indirect

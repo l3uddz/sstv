@@ -2,6 +2,7 @@ package guide
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"github.com/beevik/etree"
 	"github.com/l3uddz/sstv"
@@ -115,6 +116,92 @@ func (c *Client) GenerateLineupStatus() (string, error) {
 	b, err := json.Marshal(data)
 	if err != nil {
 		return "", fmt.Errorf("marshal lineup_status: %w", err)
+	}
+
+	return string(b), nil
+}
+
+func (c *Client) GenerateDiscover() (string, error) {
+	type discover struct {
+		FriendlyName    string
+		Manufacturer    string
+		ModelNumber     string
+		FirmwareName    string
+		TunerCount      int
+		FirmwareVersion string
+		DeviceID        string
+		DeviceAuth      string
+		BaseURL         string
+		LineupURL       string
+	}
+
+	// generate discover data
+	data := &discover{
+		FriendlyName:    "sstv",
+		Manufacturer:    "Silicondust",
+		ModelNumber:     "HDTC-2US",
+		FirmwareName:    "hdhomeruntc_atsc",
+		TunerCount:      100,
+		FirmwareVersion: "20150826",
+		DeviceID:        "1465B5A6-9834-3DDC-ACF8-F4EB602AFB78",
+		DeviceAuth:      "sstv",
+		BaseURL:         strings.TrimRight(c.publicURL, "/"),
+		LineupURL:       sstv.JoinURL(c.publicURL, "lineup.json"),
+	}
+
+	// marshal
+	b, err := json.Marshal(data)
+	if err != nil {
+		return "", fmt.Errorf("marshal discover: %w", err)
+	}
+
+	return string(b), nil
+}
+
+func (c *Client) GenerateDevice() (string, error) {
+	type upnpVersion struct {
+		Major int32 `xml:"major"`
+		Minor int32 `xml:"minor"`
+	}
+
+	type upnpDevice struct {
+		DeviceType   string `xml:"deviceType"`
+		FriendlyName string `xml:"friendlyName"`
+		Manufacturer string `xml:"manufacturer"`
+		ModelName    string `xml:"modelName"`
+		ModelNumber  string `xml:"modelNumber"`
+		SerialNumber string `xml:"serialNumber"`
+		UDN          string `xml:"UDN"`
+	}
+
+	type upnp struct {
+		XMLName     xml.Name    `xml:"urn:schemas-upnp-org:device-1-0 root"`
+		SpecVersion upnpVersion `xml:"specVersion"`
+		URLBase     string      `xml:"URLBase"`
+		Device      upnpDevice  `xml:"device"`
+	}
+
+	// generate device ata
+	data := &upnp{
+		SpecVersion: upnpVersion{
+			Major: 1,
+			Minor: 0,
+		},
+		URLBase: strings.TrimRight(c.publicURL, "/"),
+		Device: upnpDevice{
+			DeviceType:   "urn:schemas-upnp-org:device:MediaServer:1",
+			FriendlyName: "sstv",
+			Manufacturer: "Silicondust",
+			ModelName:    "HDTC-2US",
+			ModelNumber:  "HDTC-2US",
+			UDN:          "uuid:1465B5A6-9834-3DDC-ACF8-F4EB602AFB78",
+		},
+	}
+
+	// marshal
+	b, err := xml.Marshal(data)
+	if err != nil {
+		return "", fmt.Errorf("marshal discover: %w", err)
 	}
 
 	return string(b), nil

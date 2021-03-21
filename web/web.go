@@ -30,6 +30,11 @@ func (c *Client) SetHandlers(r *gin.Engine) {
 	// plex
 	r.GET("/lineup.json", c.Lineup)
 	r.GET("/lineup_status.json", c.LineupStatus)
+	r.GET("/lineup.post", c.LineupPost)
+	r.POST("/lineup.post", c.LineupPost)
+	r.GET("/discover.json", c.Discover)
+	r.GET("/device.xml", c.Device)
+	r.GET("/", c.Device)
 }
 
 func (c *Client) Logger() gin.HandlerFunc {

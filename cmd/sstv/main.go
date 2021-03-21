@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/alecthomas/kong"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/goccy/go-yaml"
 	"github.com/l3uddz/sstv/build"
@@ -133,6 +134,7 @@ func main() {
 	wc := web.New(ss)
 
 	r.Use(gin.Recovery())
+	r.Use(cors.Default())
 	r.Use(wc.Logger())
 
 	wc.SetHandlers(r)
