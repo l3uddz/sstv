@@ -135,7 +135,7 @@ func (c *Client) GenerateDiscover() (string, error) {
 		LineupURL       string
 	}
 
-	// generate discover data
+	// generate discover
 	data := &discover{
 		FriendlyName:    "sstv",
 		Manufacturer:    "Silicondust",
@@ -181,7 +181,7 @@ func (c *Client) GenerateDevice() (string, error) {
 		Device      upnpDevice  `xml:"device"`
 	}
 
-	// generate device ata
+	// generate device
 	data := &upnp{
 		SpecVersion: upnpVersion{
 			Major: 1,
