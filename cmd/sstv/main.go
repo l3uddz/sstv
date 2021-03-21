@@ -24,6 +24,7 @@ import (
 )
 
 type config struct {
+	PublicURL     string               `yaml:"public_url"`
 	SmoothStreams smoothstreams.Config `yaml:"smoothstreams"`
 }
 
@@ -114,7 +115,7 @@ func main() {
 	}
 
 	// smoothstreams
-	ss, err := smoothstreams.New(cfg.SmoothStreams)
+	ss, err := smoothstreams.New(cfg.SmoothStreams, cfg.PublicURL)
 	if err != nil {
 		log.Fatal().
 			Err(err).

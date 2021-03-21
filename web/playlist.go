@@ -7,14 +7,13 @@ import (
 )
 
 func (c *Client) Playlist(g *gin.Context) {
-	// decode query
+	// channel requested?
 	b := new(struct {
 		Channel int `form:"channel"`
 		Type    int `form:"type,omitempty"`
 	})
 
-	// channel requested?
-	if g.ShouldBindQuery(b) == nil {
+	if g.ShouldBindQuery(b) == nil && b.Channel > 0 {
 		// get requested channel stream link
 		cl, err := c.ss.Stream.GetLink(b.Channel, b.Type)
 		if err != nil {
@@ -28,5 +27,11 @@ func (c *Client) Playlist(g *gin.Context) {
 		return
 	}
 
-	// send channel playlist
+	// generate playlist
+	playlist, err := c.ss.Guide.GeneratePlaylist()
+	if err != nil {
+		g.AbortWithError(http.StatusInternalServerError, fmt.Errorf("generate playlist: %w", err))
+	}
+
+	g.Data(http.StatusOK, "application/x-mpegURL; charset=utf-8", []byte(playlist))
 }

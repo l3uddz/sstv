@@ -3,6 +3,7 @@ package smoothstreams
 import (
 	"fmt"
 	"github.com/l3uddz/sstv/logger"
+	"github.com/l3uddz/sstv/smoothstreams/guide"
 	"github.com/l3uddz/sstv/smoothstreams/stream"
 	"github.com/l3uddz/sstv/smoothstreams/token"
 	"github.com/rs/zerolog"
@@ -19,12 +20,13 @@ type Config struct {
 
 type Client struct {
 	Token  *token.Client
+	Guide  *guide.Client
 	Stream *stream.Client
 
 	log zerolog.Logger
 }
 
-func New(c Config) (*Client, error) {
+func New(c Config, publicURL string) (*Client, error) {
 	l := logger.New(c.Verbosity)
 
 	// token
@@ -35,6 +37,7 @@ func New(c Config) (*Client, error) {
 
 	return &Client{
 		Token:  t,
+		Guide:  guide.New(publicURL, l),
 		Stream: stream.New(c.Site, c.Server, t, l),
 
 		log: l,

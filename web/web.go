@@ -49,7 +49,7 @@ func (c *Client) Logger() gin.HandlerFunc {
 				Str("url", g.Request.RequestURI).
 				Int("status", g.Writer.Status()).
 				Str("ip", g.ClientIP()).
-				Dur("latency", l).
+				Str("latency", l.String()).
 				Msg("Request failed")
 			return
 		}
@@ -59,7 +59,7 @@ func (c *Client) Logger() gin.HandlerFunc {
 			Str("url", g.Request.RequestURI).
 			Int("status", g.Writer.Status()).
 			Str("ip", g.ClientIP()).
-			Dur("latency", l).
+			Str("latency", l.String()).
 			Msg("Request processed")
 	}
 }
