@@ -39,7 +39,11 @@ func (c *Client) SetHandlers(r *gin.Engine) {
 
 func (c *Client) Logger() gin.HandlerFunc {
 	return func(g *gin.Context) {
-		// before
+		if g.Request == nil {
+			g.Next()
+			return
+		}
+
 		rl := c.log.With().
 			Str("ip", g.ClientIP()).
 			Str("uri", g.Request.RequestURI).
@@ -49,12 +53,7 @@ func (c *Client) Logger() gin.HandlerFunc {
 
 		t := time.Now()
 		g.Next()
-
-		// after
 		l := time.Since(t)
-		if g.Request == nil {
-			return
-		}
 
 		if len(g.Errors) > 0 {
 			errors := make([]error, 0)
