@@ -3,6 +3,7 @@ package guide
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/l3uddz/sstv/build"
 	"github.com/lucperkins/rek"
 	"sort"
 	"strconv"
@@ -11,7 +12,7 @@ import (
 func (c *Client) GetEPG(days int) ([]Channel, error) {
 	// create epg request
 	resp, err := rek.Get(fmt.Sprintf("https://fast-guide.smoothstreams.tv/altepg/feedall%d.json", days),
-		rek.Timeout(c.timeout))
+		rek.Timeout(c.timeout), rek.UserAgent(build.UserAgent))
 	if err != nil {
 		return nil, fmt.Errorf("request epg: %w", err)
 	}

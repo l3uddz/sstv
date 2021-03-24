@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/l3uddz/sstv/build"
 	"github.com/l3uddz/sstv/smoothstreams/guide"
 	"github.com/l3uddz/sstv/smoothstreams/stream"
 	"github.com/lucperkins/rek"
@@ -48,7 +49,7 @@ func (c *Client) Stream(g *gin.Context) {
 	}
 
 	// proxy stream link
-	resp, err := rek.Get(cl)
+	resp, err := rek.Get(cl, rek.UserAgent(build.UserAgent))
 	if err != nil {
 		g.AbortWithError(http.StatusInternalServerError, fmt.Errorf("get proxy stream: %w", err))
 		return

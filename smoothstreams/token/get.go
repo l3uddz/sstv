@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/l3uddz/sstv"
+	"github.com/l3uddz/sstv/build"
 	"github.com/lucperkins/rek"
 	"net/url"
 	"time"
@@ -34,7 +35,7 @@ func (c *Client) Get() (string, error) {
 		Msg("Requesting token")
 
 	// create token request
-	resp, err := rek.Get(tokenUrl, rek.Timeout(c.timeout))
+	resp, err := rek.Get(tokenUrl, rek.Timeout(c.timeout), rek.UserAgent(build.UserAgent))
 	if err != nil {
 		return c.hash, fmt.Errorf("request token: %w", err)
 	}

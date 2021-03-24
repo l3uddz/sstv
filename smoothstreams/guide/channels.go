@@ -3,6 +3,7 @@ package guide
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/l3uddz/sstv/build"
 	"github.com/lucperkins/rek"
 	"sort"
 	"strconv"
@@ -28,7 +29,8 @@ type Programme struct {
 
 func (c *Client) GetChannels() ([]Channel, error) {
 	// create guide request
-	resp, err := rek.Get("https://fast-guide.smoothstreams.tv/feed.json", rek.Timeout(c.timeout))
+	resp, err := rek.Get("https://fast-guide.smoothstreams.tv/feed.json", rek.Timeout(c.timeout),
+		rek.UserAgent(build.UserAgent))
 	if err != nil {
 		return nil, fmt.Errorf("request guide: %w", err)
 	}

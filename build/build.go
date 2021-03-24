@@ -4,4 +4,10 @@ var (
 	Version   string
 	Timestamp string
 	GitCommit string
+
+	UserAgent string
 )
+
+func init() {
+	UserAgent = "sstv/" + Version
+}
