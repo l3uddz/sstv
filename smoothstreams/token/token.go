@@ -3,7 +3,6 @@ package token
 import (
 	"fmt"
 	"github.com/rs/zerolog"
-	"strings"
 	"sync"
 	"time"
 )
@@ -12,6 +11,7 @@ type Client struct {
 	Username string
 	Password string
 	Site     string
+	TokenURL string
 
 	hash   string
 	code   string
@@ -22,11 +22,16 @@ type Client struct {
 	log     zerolog.Logger
 }
 
-func New(user string, pass string, site string, log zerolog.Logger) (*Client, error) {
+func New(user string, pass string, site string, tokenURL string, log zerolog.Logger) (*Client, error) {
+	if tokenURL == "" {
+		tokenURL = "https://auth.smoothstreams.tv/hash_api.php"
+	}
+
 	c := &Client{
 		Username: user,
 		Password: pass,
 		Site:     site,
+		TokenURL: tokenURL,
 
 		mtx:     &sync.Mutex{},
 		timeout: 2 * time.Minute,
@@ -42,8 +47,5 @@ func New(user string, pass string, site string, log zerolog.Logger) (*Client, er
 }
 
 func (c *Client) authUrl() string {
-	if strings.Contains(c.Site, "mma") {
-		return "https://www.mma-tv.net/loginForm.php"
-	}
-	return "https://auth.SmoothStreams.tv/hash_api.php"
+	return c.TokenURL
 }

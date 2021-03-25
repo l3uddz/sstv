@@ -14,6 +14,7 @@ type Config struct {
 	Password string `yaml:"password"`
 	Site     string `yaml:"site"`
 	Server   string `yaml:"server"`
+	TokenURL string `yaml:"token_url,omitempty"`
 
 	Verbosity string `yaml:"verbosity"`
 }
@@ -30,7 +31,7 @@ func New(c Config, publicURL string) (*Client, error) {
 	l := logger.New(c.Verbosity)
 
 	// token
-	t, err := token.New(c.Username, c.Password, c.Site, l)
+	t, err := token.New(c.Username, c.Password, c.Site, c.TokenURL, l)
 	if err != nil {
 		return nil, fmt.Errorf("token: %w", err)
 	}
