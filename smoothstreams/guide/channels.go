@@ -28,8 +28,14 @@ type Programme struct {
 }
 
 func (c *Client) GetChannels() ([]Channel, error) {
-	// create guide request
-	resp, err := rek.Get("https://fast-guide.smoothstreams.tv/feed.json", rek.Timeout(c.timeout),
+	type channel struct {
+		Number string `json:"channum"`
+		Name   string `json:"channame"`
+		Image  string `json:"icon"`
+	}
+
+	// create channels request
+	resp, err := rek.Get("https://fast-guide.smoothstreams.tv/altepg/channels.json", rek.Timeout(c.timeout),
 		rek.UserAgent(build.UserAgent))
 	if err != nil {
 		return nil, fmt.Errorf("request guide: %w", err)
@@ -41,28 +47,27 @@ func (c *Client) GetChannels() ([]Channel, error) {
 		return nil, fmt.Errorf("validate guide response: %s", resp.Status())
 	}
 
-	// decode guide response
-	b := make(map[string]Channel, 0)
+	// decode channels response
+	b := make(map[string]channel, 0)
 	if err := json.NewDecoder(resp.Body()).Decode(&b); err != nil {
 		return nil, fmt.Errorf("decode guide response: %w", err)
 	}
 
-	// transform guide response
-	keys := make([]string, 0)
-	for k := range b {
-		keys = append(keys, k)
+	// transform channels response
+	channels := make([]Channel, 0)
+	for _, v := range b {
+		channels = append(channels, Channel{
+			Number: v.Number,
+			Name:   v.Name,
+			Image:  v.Image,
+		})
 	}
 
-	sort.Slice(keys, func(i, j int) bool {
-		numA, _ := strconv.Atoi(keys[i])
-		numB, _ := strconv.Atoi(keys[j])
+	sort.Slice(channels, func(i, j int) bool {
+		numA, _ := strconv.Atoi(channels[i].Number)
+		numB, _ := strconv.Atoi(channels[j].Number)
 		return numA < numB
 	})
-
-	channels := make([]Channel, 0)
-	for _, k := range keys {
-		channels = append(channels, b[k])
-	}
 
 	return channels, nil
 }

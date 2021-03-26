@@ -7,12 +7,15 @@ import (
 	"github.com/beevik/etree"
 	"github.com/l3uddz/sstv"
 	"github.com/l3uddz/sstv/smoothstreams/util"
+	"net/url"
+	"strconv"
 	"strings"
 )
 
 type PlaylistOptions struct {
-	Type  int  `form:"type,omitempty"`
-	Proxy bool `form:"proxy,omitempty"`
+	Type   int    `form:"type,omitempty"`
+	Proxy  bool   `form:"proxy,omitempty"`
+	Server string `form:"server,omitempty"`
 }
 
 func (c *Client) GeneratePlaylist(opts *PlaylistOptions) (string, error) {
@@ -20,6 +23,19 @@ func (c *Client) GeneratePlaylist(opts *PlaylistOptions) (string, error) {
 	channels, err := c.GetChannels()
 	if err != nil {
 		return "", fmt.Errorf("get channels: %w", err)
+	}
+
+	// prepare base channel args
+	args := url.Values{}
+
+	if opts.Type > 0 {
+		args.Set("type", strconv.Itoa(opts.Type))
+	}
+	if opts.Proxy {
+		args.Set("proxy", strconv.FormatBool(opts.Proxy))
+	}
+	if opts.Server != "" {
+		args.Set("server", opts.Server)
 	}
 
 	// generate playlist
@@ -41,12 +57,19 @@ func (c *Client) GeneratePlaylist(opts *PlaylistOptions) (string, error) {
 			logo = "https://i.imgur.com/UyrGfW2.png"
 		}
 
+		// prepare channel stream url
+		args.Set("channel", channel.Number)
+
+		channelURL, err := sstv.URLWithQuery(sstv.JoinURL(c.publicURL, "stream.m3u8"), args)
+		if err != nil {
+			return "", fmt.Errorf("generate channel url: %w", err)
+		}
+
 		// add channel to playlist data
 		data = append(data, fmt.Sprintf(
 			"#EXTINF:-1 tvg-id=%q tvg-name=%q tvg-logo=%q tvg-chno=%q channel-id=%q group-title=%q,%s",
 			channel.Number, name, logo, channel.Number, channel.Number, "SmoothStreams", name))
-		data = append(data, sstv.JoinURL(c.publicURL,
-			fmt.Sprintf("stream.m3u8?channel=%s&type=%d&proxy=%v", channel.Number, opts.Type, opts.Proxy)))
+		data = append(data, channelURL)
 	}
 
 	return strings.Join(data, "\n"), nil
@@ -65,6 +88,12 @@ func (c *Client) GenerateLineup(opts *PlaylistOptions) (string, error) {
 		return "", fmt.Errorf("get channels: %w", err)
 	}
 
+	// prepare base channel args
+	args := url.Values{
+		"type": []string{strconv.Itoa(opts.Type)},
+		"plex": []string{"true"},
+	}
+
 	// generate lineup
 	data := make([]lineup, 0)
 	for _, channel := range channels {
@@ -78,12 +107,19 @@ func (c *Client) GenerateLineup(opts *PlaylistOptions) (string, error) {
 			name = fmt.Sprintf("Channel %s", channel.Number)
 		}
 
+		// prepare channel stream url
+		args.Set("channel", channel.Number)
+
+		channelURL, err := sstv.URLWithQuery(sstv.JoinURL(c.publicURL, "stream.m3u8"), args)
+		if err != nil {
+			return "", fmt.Errorf("generate channel url: %w", err)
+		}
+
 		// add channel to lineup
 		data = append(data, lineup{
 			GuideNumber: channel.Number,
 			GuideName:   name,
-			URL: sstv.JoinURL(c.publicURL,
-				fmt.Sprintf("stream.m3u8?channel=%s&type=%d&plex=1", channel.Number, opts.Type)),
+			URL:         channelURL,
 		})
 	}
 
@@ -143,7 +179,7 @@ func (c *Client) GenerateDiscover() (string, error) {
 		FirmwareName:    "hdhomeruntc_atsc",
 		TunerCount:      100,
 		FirmwareVersion: "20150826",
-		DeviceID:        "1465B5A6-9834-3DDC-ACF8-F4EB602AFB78",
+		DeviceID:        c.deviceID,
 		DeviceAuth:      "sstv",
 		BaseURL:         strings.TrimRight(c.publicURL, "/"),
 		LineupURL:       sstv.JoinURL(c.publicURL, "lineup.json"),
@@ -194,7 +230,7 @@ func (c *Client) GenerateDevice() (string, error) {
 			Manufacturer: "Silicondust",
 			ModelName:    "HDTC-2US",
 			ModelNumber:  "HDTC-2US",
-			UDN:          "uuid:1465B5A6-9834-3DDC-ACF8-F4EB602AFB78",
+			UDN:          c.deviceID,
 		},
 	}
 
