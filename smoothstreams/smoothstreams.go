@@ -27,7 +27,7 @@ type Client struct {
 	log zerolog.Logger
 }
 
-func New(c Config, publicURL string) (*Client, error) {
+func New(c Config, publicURL string, deviceID string) (*Client, error) {
 	l := logger.New(c.Verbosity)
 
 	// token
@@ -38,7 +38,7 @@ func New(c Config, publicURL string) (*Client, error) {
 
 	return &Client{
 		Token:  t,
-		Guide:  guide.New(publicURL, l),
+		Guide:  guide.New(publicURL, deviceID, l),
 		Stream: stream.New(c.Site, c.Server, t, l),
 
 		log: l,

@@ -7,12 +7,13 @@ import (
 
 type Client struct {
 	publicURL string
-	timeout   time.Duration
+	deviceID  string
 
-	log zerolog.Logger
+	timeout time.Duration
+	log     zerolog.Logger
 }
 
-func New(publicURL string, log zerolog.Logger) *Client {
+func New(publicURL string, deviceID string, log zerolog.Logger) *Client {
 	return &Client{
 		publicURL: publicURL,
 		timeout:   2 * time.Minute,

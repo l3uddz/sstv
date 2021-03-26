@@ -8,7 +8,8 @@ ENV \
   PATH="/app/sstv:${PATH}" \
   APP_CONFIG="/config/config.yml" \
   APP_LOG="/config/activity.log" \
-  APP_VERBOSITY="0"
+  APP_VERBOSITY="0" \
+  APP_SSDP="true"
 
 # Binary
 COPY ["dist/sstv_${TARGETOS}_${TARGETARCH}${TARGETVARIANT:+_7}/sstv", "/app/sstv/sstv"]

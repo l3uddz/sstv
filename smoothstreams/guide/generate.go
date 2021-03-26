@@ -143,7 +143,7 @@ func (c *Client) GenerateDiscover() (string, error) {
 		FirmwareName:    "hdhomeruntc_atsc",
 		TunerCount:      100,
 		FirmwareVersion: "20150826",
-		DeviceID:        "1465B5A6-9834-3DDC-ACF8-F4EB602AFB78",
+		DeviceID:        c.deviceID,
 		DeviceAuth:      "sstv",
 		BaseURL:         strings.TrimRight(c.publicURL, "/"),
 		LineupURL:       sstv.JoinURL(c.publicURL, "lineup.json"),
@@ -194,7 +194,7 @@ func (c *Client) GenerateDevice() (string, error) {
 			Manufacturer: "Silicondust",
 			ModelName:    "HDTC-2US",
 			ModelNumber:  "HDTC-2US",
-			UDN:          "uuid:1465B5A6-9834-3DDC-ACF8-F4EB602AFB78",
+			UDN:          c.deviceID,
 		},
 	}
 

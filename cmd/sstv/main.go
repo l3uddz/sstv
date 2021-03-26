@@ -19,11 +19,13 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"runtime"
 	"syscall"
 	"time"
 )
 
 type config struct {
+	DeviceID      string               `yaml:"device_id,omitempty"`
 	PublicURL     string               `yaml:"public_url"`
 	SmoothStreams smoothstreams.Config `yaml:"smoothstreams"`
 }
@@ -40,6 +42,7 @@ var (
 
 		Host string `type:"string" default:"0.0.0.0" short:"h" env:"APP_HOST" help:"Host to listen on"`
 		Port int    `type:"number" default:"1411" short:"p" env:"APP_PORT" help:"Port to listen on"`
+		SSDP bool   `negatable type:"bool" default:"true" env:"APP_SSDP"  help:"SSDP advertise"`
 	}
 )
 
@@ -74,6 +77,7 @@ func main() {
 	logger := log.Output(io.MultiWriter(zerolog.ConsoleWriter{
 		TimeFormat: time.Stamp,
 		Out:        os.Stderr,
+		NoColor:    runtime.GOOS == "windows",
 	}, zerolog.ConsoleWriter{
 		TimeFormat: time.Stamp,
 		Out: &lumberjack.Logger{
@@ -114,8 +118,12 @@ func main() {
 		return
 	}
 
+	if cfg.DeviceID == "" {
+		cfg.DeviceID = "1465B5A6-9834-3DDC-ACF8-F4EB602AFB78"
+	}
+
 	// smoothstreams
-	ss, err := smoothstreams.New(cfg.SmoothStreams, cfg.PublicURL)
+	ss, err := smoothstreams.New(cfg.SmoothStreams, cfg.PublicURL, cfg.DeviceID)
 	if err != nil {
 		log.Fatal().
 			Err(err).
@@ -139,7 +147,7 @@ func main() {
 
 	wc.SetHandlers(r)
 
-	// run
+	// run web server
 	srv := http.Server{
 		Addr:    fmt.Sprintf("%s:%d", cli.Host, cli.Port),
 		Handler: r,
@@ -157,10 +165,23 @@ func main() {
 		Int("port", cli.Port).
 		Msg("Listening for requests")
 
-	// shutdown
+	// background task prerequisites
+	workerCtx, workerCancel := context.WithCancel(context.Background())
+
+	// start ssdp advertiser
+	if cli.SSDP {
+		if err := startSSDP(cfg.DeviceID, cfg.PublicURL, workerCtx); err != nil {
+			log.Error().
+				Err(err).
+				Msg("Failed starting ssdp advertiser")
+		}
+	}
+
+	// wait for shutdown
 	quit := make(chan os.Signal)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
+	workerCancel()
 
 	log.Warn().Msg("Shutting down...")
 	sctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
