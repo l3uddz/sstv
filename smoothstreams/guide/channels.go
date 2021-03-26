@@ -10,9 +10,9 @@ import (
 )
 
 type Channel struct {
-	Number     string      `json:"channum"`
-	Name       string      `json:"channame"`
-	Image      string      `json:"icon"`
+	Number     string      `json:"channel_id"`
+	Name       string      `json:"name"`
+	Image      string      `json:"img"`
 	Programmes []Programme `json:"items,omitempty"`
 }
 
@@ -28,6 +28,12 @@ type Programme struct {
 }
 
 func (c *Client) GetChannels() ([]Channel, error) {
+	type channel struct {
+		Number string `json:"channum"`
+		Name   string `json:"channame"`
+		Image  string `json:"icon"`
+	}
+
 	// create guide request
 	resp, err := rek.Get("https://fast-guide.smoothstreams.tv/altepg/channels.json", rek.Timeout(c.timeout),
 		rek.UserAgent(build.UserAgent))
@@ -42,15 +48,19 @@ func (c *Client) GetChannels() ([]Channel, error) {
 	}
 
 	// decode guide response
-	b := make(map[string]Channel, 0)
+	b := make(map[string]channel, 0)
 	if err := json.NewDecoder(resp.Body()).Decode(&b); err != nil {
 		return nil, fmt.Errorf("decode guide response: %w", err)
 	}
 
 	// transform guide response
 	channels := make([]Channel, 0)
-	for k, _ := range b {
-		channels = append(channels, b[k])
+	for _, v := range b {
+		channels = append(channels, Channel{
+			Number: v.Number,
+			Name:   v.Name,
+			Image:  v.Image,
+		})
 	}
 
 	sort.Slice(channels, func(i, j int) bool {
