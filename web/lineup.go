@@ -10,8 +10,7 @@ import (
 func (c *Client) Lineup(g *gin.Context) {
 	// prepare playlist options
 	b := &guide.PlaylistOptions{
-		Type:  1,
-		Proxy: false,
+		Type: 1,
 	}
 
 	// generate lineup

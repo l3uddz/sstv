@@ -25,6 +25,19 @@ func (c *Client) GeneratePlaylist(opts *PlaylistOptions) (string, error) {
 		return "", fmt.Errorf("get channels: %w", err)
 	}
 
+	// prepare base channel args
+	args := url.Values{}
+
+	if opts.Type > 0 {
+		args.Set("type", strconv.Itoa(opts.Type))
+	}
+	if opts.Proxy {
+		args.Set("proxy", strconv.FormatBool(opts.Proxy))
+	}
+	if opts.Server != "" {
+		args.Set("server", opts.Server)
+	}
+
 	// generate playlist
 	data := []string{"#EXTM3U"}
 	for _, channel := range channels {
@@ -45,15 +58,7 @@ func (c *Client) GeneratePlaylist(opts *PlaylistOptions) (string, error) {
 		}
 
 		// prepare channel stream url
-		args := url.Values{
-			"channel": []string{channel.Number},
-			"type":    []string{strconv.Itoa(opts.Type)},
-			"proxy":   []string{strconv.FormatBool(opts.Proxy)},
-		}
-
-		if opts.Server != "" {
-			args.Set("server", opts.Server)
-		}
+		args.Set("channel", channel.Number)
 
 		channelURL, err := sstv.URLWithQuery(sstv.JoinURL(c.publicURL, "stream.m3u8"), args)
 		if err != nil {
@@ -83,6 +88,12 @@ func (c *Client) GenerateLineup(opts *PlaylistOptions) (string, error) {
 		return "", fmt.Errorf("get channels: %w", err)
 	}
 
+	// prepare base channel args
+	args := url.Values{
+		"type": []string{strconv.Itoa(opts.Type)},
+		"plex": []string{"true"},
+	}
+
 	// generate lineup
 	data := make([]lineup, 0)
 	for _, channel := range channels {
@@ -97,11 +108,7 @@ func (c *Client) GenerateLineup(opts *PlaylistOptions) (string, error) {
 		}
 
 		// prepare channel stream url
-		args := url.Values{
-			"channel": []string{channel.Number},
-			"type":    []string{strconv.Itoa(opts.Type)},
-			"plex":    []string{"true"},
-		}
+		args.Set("channel", channel.Number)
 
 		channelURL, err := sstv.URLWithQuery(sstv.JoinURL(c.publicURL, "stream.m3u8"), args)
 		if err != nil {
