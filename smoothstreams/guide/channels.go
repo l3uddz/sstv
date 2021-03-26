@@ -34,7 +34,7 @@ func (c *Client) GetChannels() ([]Channel, error) {
 		Image  string `json:"icon"`
 	}
 
-	// create guide request
+	// create channels request
 	resp, err := rek.Get("https://fast-guide.smoothstreams.tv/altepg/channels.json", rek.Timeout(c.timeout),
 		rek.UserAgent(build.UserAgent))
 	if err != nil {
@@ -47,13 +47,13 @@ func (c *Client) GetChannels() ([]Channel, error) {
 		return nil, fmt.Errorf("validate guide response: %s", resp.Status())
 	}
 
-	// decode guide response
+	// decode channels response
 	b := make(map[string]channel, 0)
 	if err := json.NewDecoder(resp.Body()).Decode(&b); err != nil {
 		return nil, fmt.Errorf("decode guide response: %w", err)
 	}
 
-	// transform guide response
+	// transform channels response
 	channels := make([]Channel, 0)
 	for _, v := range b {
 		channels = append(channels, Channel{
