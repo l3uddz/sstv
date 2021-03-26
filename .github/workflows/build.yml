@@ -73,23 +73,26 @@ jobs:
           make publish
 
       # artifacts
-#      - name: artifact_linux
-#        uses: actions/upload-artifact@v2-preview
-#        with:
-#          name: build_linux
-#          path: dist/*linux*
-#
-#      - name: artifact_darwin
-#        uses: actions/upload-artifact@v2-preview
-#        with:
-#          name: build_darwin
-#          path: dist/*darwin*
-#
-#      - name: artifact_windows
-#        uses: actions/upload-artifact@v2-preview
-#        with:
-#          name: build_windows
-#          path: dist/*windows*
+      - name: artifact_linux
+        if: ${{!github.event.repository.private}}
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: build_linux
+          path: dist/*linux*
+
+      - name: artifact_darwin
+        if: ${{!github.event.repository.private}}
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: build_darwin
+          path: dist/*darwin*
+
+      - name: artifact_windows
+        if: ${{!github.event.repository.private}}
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: build_windows
+          path: dist/*windows*
 
       # docker login
       - name: docker login
