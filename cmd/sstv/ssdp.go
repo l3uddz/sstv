@@ -10,7 +10,7 @@ import (
 )
 
 func startSSDP(deviceID string, publicURL string, ctx context.Context) error {
-	// create ssdp
+	// credits: https://github.com/tellytv/telly/blob/d507e7ec3f81bc683f904eae80ab34d3142de91b/routes.go#L136
 	ad, err := ssdp.Advertise(
 		"upnp:rootdevice",
 		fmt.Sprintf("uuid:%s::upnp:rootdevice", deviceID),

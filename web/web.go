@@ -62,6 +62,7 @@ func (c *Client) Logger() gin.HandlerFunc {
 			return
 		}
 
+		// log request
 		rl := c.log.With().
 			Str("ip", g.ClientIP()).
 			Str("uri", g.Request.RequestURI).
@@ -69,10 +70,12 @@ func (c *Client) Logger() gin.HandlerFunc {
 
 		rl.Debug().Msg("Request received")
 
+		// handle request
 		t := time.Now()
 		g.Next()
 		l := time.Since(t)
 
+		// log errors
 		if len(g.Errors) > 0 {
 			errors := make([]error, 0)
 			for _, err := range g.Errors {
@@ -87,6 +90,7 @@ func (c *Client) Logger() gin.HandlerFunc {
 			return
 		}
 
+		// log outcome
 		rl.Info().
 			Str("size", humanize.IBytes(uint64(g.Writer.Size()))).
 			Int("status", g.Writer.Status()).
