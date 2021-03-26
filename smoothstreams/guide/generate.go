@@ -7,12 +7,15 @@ import (
 	"github.com/beevik/etree"
 	"github.com/l3uddz/sstv"
 	"github.com/l3uddz/sstv/smoothstreams/util"
+	"net/url"
+	"strconv"
 	"strings"
 )
 
 type PlaylistOptions struct {
-	Type  int  `form:"type,omitempty"`
-	Proxy bool `form:"proxy,omitempty"`
+	Type   int    `form:"type,omitempty"`
+	Proxy  bool   `form:"proxy,omitempty"`
+	Server string `form:"server,omitempty"`
 }
 
 func (c *Client) GeneratePlaylist(opts *PlaylistOptions) (string, error) {
@@ -41,12 +44,27 @@ func (c *Client) GeneratePlaylist(opts *PlaylistOptions) (string, error) {
 			logo = "https://i.imgur.com/UyrGfW2.png"
 		}
 
+		// prepare channel stream url
+		args := url.Values{
+			"channel": []string{channel.Number},
+			"type":    []string{strconv.Itoa(opts.Type)},
+			"proxy":   []string{strconv.FormatBool(opts.Proxy)},
+		}
+
+		if opts.Server != "" {
+			args.Set("server", opts.Server)
+		}
+
+		channelURL, err := sstv.URLWithQuery(sstv.JoinURL(c.publicURL, "stream.m3u8"), args)
+		if err != nil {
+			return "", fmt.Errorf("generate channel url: %w", err)
+		}
+
 		// add channel to playlist data
 		data = append(data, fmt.Sprintf(
 			"#EXTINF:-1 tvg-id=%q tvg-name=%q tvg-logo=%q tvg-chno=%q channel-id=%q group-title=%q,%s",
 			channel.Number, name, logo, channel.Number, channel.Number, "SmoothStreams", name))
-		data = append(data, sstv.JoinURL(c.publicURL,
-			fmt.Sprintf("stream.m3u8?channel=%s&type=%d&proxy=%v", channel.Number, opts.Type, opts.Proxy)))
+		data = append(data, channelURL)
 	}
 
 	return strings.Join(data, "\n"), nil
@@ -78,12 +96,23 @@ func (c *Client) GenerateLineup(opts *PlaylistOptions) (string, error) {
 			name = fmt.Sprintf("Channel %s", channel.Number)
 		}
 
+		// prepare channel stream url
+		args := url.Values{
+			"channel": []string{channel.Number},
+			"type":    []string{strconv.Itoa(opts.Type)},
+			"plex":    []string{"true"},
+		}
+
+		channelURL, err := sstv.URLWithQuery(sstv.JoinURL(c.publicURL, "stream.m3u8"), args)
+		if err != nil {
+			return "", fmt.Errorf("generate channel url: %w", err)
+		}
+
 		// add channel to lineup
 		data = append(data, lineup{
 			GuideNumber: channel.Number,
 			GuideName:   name,
-			URL: sstv.JoinURL(c.publicURL,
-				fmt.Sprintf("stream.m3u8?channel=%s&type=%d&plex=1", channel.Number, opts.Type)),
+			URL:         channelURL,
 		})
 	}
 

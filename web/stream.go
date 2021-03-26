@@ -31,7 +31,7 @@ func (c *Client) Stream(g *gin.Context) {
 	}
 
 	// get stream link
-	cl, err := c.ss.Stream.GetLink(b.Channel, b.Type)
+	cl, err := c.ss.Stream.GetLink(b.Channel, b.Server, b.Type)
 	if err != nil {
 		g.AbortWithError(http.StatusInternalServerError,
 			fmt.Errorf("get stream link: %d.%d: %w", b.Channel, b.Type, err))
