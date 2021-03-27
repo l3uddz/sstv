@@ -244,8 +244,8 @@ func (c *Client) GenerateDevice() (string, error) {
 }
 
 type EpgOptions struct {
-	Days int    `form:"days,omitempty"`
-	Type string `form:"type,omitempty"`
+	Days int `form:"days,omitempty"`
+	Type int `form:"type,omitempty"`
 }
 
 func (c *Client) GenerateEPG(opts *EpgOptions) (string, error) {

@@ -7,14 +7,17 @@ import (
 	"github.com/lucperkins/rek"
 	"sort"
 	"strconv"
-	"strings"
+)
+
+const (
+	SPORT int = iota + 1
 )
 
 func (c *Client) GetEPG(opts *EpgOptions) ([]Channel, error) {
 	// determine request url
 	requestURL := ""
-	switch strings.ToLower(opts.Type) {
-	case "sport":
+	switch opts.Type {
+	case SPORT:
 		// sports epg
 		requestURL = "https://fast-guide.smoothstreams.tv/feed.json"
 	default:
