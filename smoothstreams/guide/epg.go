@@ -12,10 +12,14 @@ import (
 
 func (c *Client) GetEPG(opts *EpgOptions) ([]Channel, error) {
 	// determine request url
-	requestURL := fmt.Sprintf("https://fast-guide.smoothstreams.tv/altepg/feedall%d.json", opts.Days)
-
-	if strings.EqualFold(opts.Type, "sport") {
+	requestURL := ""
+	switch strings.ToLower(opts.Type) {
+	case "sport":
+		// sports epg
 		requestURL = "https://fast-guide.smoothstreams.tv/feed.json"
+	default:
+		// default epg
+		requestURL = fmt.Sprintf("https://fast-guide.smoothstreams.tv/altepg/feedall%d.json", opts.Days)
 	}
 
 	// create epg request
