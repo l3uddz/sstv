@@ -21,19 +21,19 @@ func (c *Client) GetEPG(opts *EpgOptions) ([]Channel, error) {
 	// create epg request
 	resp, err := rek.Get(requestURL, rek.Timeout(c.timeout), rek.UserAgent(build.UserAgent))
 	if err != nil {
-		return nil, fmt.Errorf("request standard epg: %w", err)
+		return nil, fmt.Errorf("request epg: %w", err)
 	}
 	defer resp.Body().Close()
 
 	// validate response
 	if resp.StatusCode() != 200 {
-		return nil, fmt.Errorf("validate standard epg response: %s", resp.Status())
+		return nil, fmt.Errorf("validate epg response: %s", resp.Status())
 	}
 
 	// decode epg response
 	b := make(map[string]Channel, 0)
 	if err := json.NewDecoder(resp.Body()).Decode(&b); err != nil {
-		return nil, fmt.Errorf("decode standard epg response: %w", err)
+		return nil, fmt.Errorf("decode epg response: %w", err)
 	}
 
 	// transform epg response
