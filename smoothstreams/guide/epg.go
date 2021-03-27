@@ -9,10 +9,24 @@ import (
 	"strconv"
 )
 
-func (c *Client) GetEPG(days int) ([]Channel, error) {
+const (
+	SPORT int = iota + 1
+)
+
+func (c *Client) GetEPG(opts *EpgOptions) ([]Channel, error) {
+	// determine request url
+	requestURL := ""
+	switch opts.Type {
+	case SPORT:
+		// sports epg
+		requestURL = "https://fast-guide.smoothstreams.tv/feed.json"
+	default:
+		// default epg
+		requestURL = fmt.Sprintf("https://fast-guide.smoothstreams.tv/altepg/feedall%d.json", opts.Days)
+	}
+
 	// create epg request
-	resp, err := rek.Get(fmt.Sprintf("https://fast-guide.smoothstreams.tv/altepg/feedall%d.json", days),
-		rek.Timeout(c.timeout), rek.UserAgent(build.UserAgent))
+	resp, err := rek.Get(requestURL, rek.Timeout(c.timeout), rek.UserAgent(build.UserAgent))
 	if err != nil {
 		return nil, fmt.Errorf("request epg: %w", err)
 	}
