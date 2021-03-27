@@ -237,7 +237,7 @@ func (c *Client) GenerateDevice() (string, error) {
 	// marshal
 	b, err := xml.Marshal(data)
 	if err != nil {
-		return "", fmt.Errorf("marshal discover: %w", err)
+		return "", fmt.Errorf("marshal device: %w", err)
 	}
 
 	return string(b), nil
@@ -331,7 +331,7 @@ func (c *Client) GenerateEPG(opts *EpgOptions) (string, error) {
 	doc.Indent(2)
 	data, err := doc.WriteToString()
 	if err != nil {
-		return "", fmt.Errorf("write to string: %w", err)
+		return "", fmt.Errorf("write epg string: %w", err)
 	}
 
 	return data, nil

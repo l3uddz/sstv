@@ -38,19 +38,19 @@ func (c *Client) GetChannels() ([]Channel, error) {
 	resp, err := rek.Get("https://fast-guide.smoothstreams.tv/altepg/channels.json", rek.Timeout(c.timeout),
 		rek.UserAgent(build.UserAgent))
 	if err != nil {
-		return nil, fmt.Errorf("request guide: %w", err)
+		return nil, fmt.Errorf("request channels: %w", err)
 	}
 	defer resp.Body().Close()
 
 	// validate response
 	if resp.StatusCode() != 200 {
-		return nil, fmt.Errorf("validate guide response: %s", resp.Status())
+		return nil, fmt.Errorf("validate channels response: %s", resp.Status())
 	}
 
 	// decode channels response
 	b := make(map[string]channel, 0)
 	if err := json.NewDecoder(resp.Body()).Decode(&b); err != nil {
-		return nil, fmt.Errorf("decode guide response: %w", err)
+		return nil, fmt.Errorf("decode channels response: %w", err)
 	}
 
 	// transform channels response
