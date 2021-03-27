@@ -244,7 +244,8 @@ func (c *Client) GenerateDevice() (string, error) {
 }
 
 type EpgOptions struct {
-	Days int `form:"days,omitempty"`
+	Days int    `form:"days,omitempty"`
+	Type string `form:"type,omitempty"`
 }
 
 func (c *Client) GenerateEPG(opts *EpgOptions) (string, error) {
@@ -255,7 +256,7 @@ func (c *Client) GenerateEPG(opts *EpgOptions) (string, error) {
 	}
 
 	// retrieve channels (with epg data)
-	channels, err := c.GetEPG(opts.Days)
+	channels, err := c.GetEPG(opts)
 	if err != nil {
 		return "", fmt.Errorf("get epg: %w", err)
 	}
