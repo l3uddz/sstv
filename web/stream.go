@@ -16,18 +16,28 @@ func (c *Client) Stream(g *gin.Context) {
 	// parse query
 	b := new(struct {
 		guide.PlaylistOptions
-		Channel int `form:"channel"`
+		Channel int `uri:"channel" binding:"required"`
 	})
+
+	if err := g.ShouldBindUri(b); err != nil {
+		g.AbortWithError(http.StatusBadRequest, fmt.Errorf("bind uri: %w", err))
+	}
 
 	if err := g.ShouldBindQuery(b); err != nil {
 		g.AbortWithError(http.StatusBadRequest, fmt.Errorf("bind query: %w", err))
 		return
 	}
 
-	// validate query
+	// validate request
 	if b.Channel == 0 {
 		g.AbortWithError(http.StatusBadRequest, errors.New("channel was not parsed"))
 		return
+	}
+
+	// adjust request
+	if c.forceProxy && !b.Plex {
+		b.Type = stream.MPEG2TS
+		b.Proxy = true
 	}
 
 	// get stream link

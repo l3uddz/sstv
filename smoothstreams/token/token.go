@@ -46,6 +46,6 @@ func New(user string, pass string, site string, tokenURL string, log zerolog.Log
 	return c, nil
 }
 
-func (c *Client) authUrl() string {
+func (c *Client) authURL() string {
 	return c.TokenURL
 }

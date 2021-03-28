@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/l3uddz/sstv/smoothstreams/guide"
+	"github.com/l3uddz/sstv/smoothstreams/stream"
 	"net/http"
 )
 
 func (c *Client) Lineup(g *gin.Context) {
 	// prepare playlist options
 	b := &guide.PlaylistOptions{
-		Type: 1,
+		Type: stream.MPEG2TS,
+		Plex: true,
 	}
 
 	// generate lineup

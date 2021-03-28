@@ -15,6 +15,7 @@ import (
 type PlaylistOptions struct {
 	Type   int    `form:"type,omitempty"`
 	Proxy  bool   `form:"proxy,omitempty"`
+	Plex   bool   `form:"plex,omitempty"`
 	Server string `form:"server,omitempty"`
 }
 
@@ -58,9 +59,7 @@ func (c *Client) GeneratePlaylist(opts *PlaylistOptions) (string, error) {
 		}
 
 		// prepare channel stream url
-		args.Set("channel", channel.Number)
-
-		channelURL, err := sstv.URLWithQuery(sstv.JoinURL(c.publicURL, "stream.m3u8"), args)
+		channelURL, err := sstv.URLWithQuery(sstv.JoinURL(c.publicURL, "stream", channel.Number), args)
 		if err != nil {
 			return "", fmt.Errorf("generate channel url: %w", err)
 		}
@@ -91,7 +90,7 @@ func (c *Client) GenerateLineup(opts *PlaylistOptions) (string, error) {
 	// prepare base channel args
 	args := url.Values{
 		"type": []string{strconv.Itoa(opts.Type)},
-		"plex": []string{"true"},
+		"plex": []string{strconv.FormatBool(opts.Plex)},
 	}
 
 	// generate lineup
@@ -108,9 +107,7 @@ func (c *Client) GenerateLineup(opts *PlaylistOptions) (string, error) {
 		}
 
 		// prepare channel stream url
-		args.Set("channel", channel.Number)
-
-		channelURL, err := sstv.URLWithQuery(sstv.JoinURL(c.publicURL, "stream.m3u8"), args)
+		channelURL, err := sstv.URLWithQuery(sstv.JoinURL(c.publicURL, "stream", channel.Number), args)
 		if err != nil {
 			return "", fmt.Errorf("generate channel url: %w", err)
 		}
