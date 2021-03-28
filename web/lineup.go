@@ -12,6 +12,7 @@ func (c *Client) Lineup(g *gin.Context) {
 	// prepare playlist options
 	b := &guide.PlaylistOptions{
 		Type: stream.MPEG2TS,
+		Plex: true,
 	}
 
 	// generate lineup

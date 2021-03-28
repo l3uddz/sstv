@@ -15,6 +15,7 @@ import (
 type PlaylistOptions struct {
 	Type   int    `form:"type,omitempty"`
 	Proxy  bool   `form:"proxy,omitempty"`
+	Plex   bool   `form:"plex,omitempty"`
 	Server string `form:"server,omitempty"`
 }
 
@@ -89,7 +90,7 @@ func (c *Client) GenerateLineup(opts *PlaylistOptions) (string, error) {
 	// prepare base channel args
 	args := url.Values{
 		"type": []string{strconv.Itoa(opts.Type)},
-		"plex": []string{"true"},
+		"plex": []string{strconv.FormatBool(opts.Plex)},
 	}
 
 	// generate lineup
