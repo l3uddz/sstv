@@ -24,6 +24,11 @@ func (c *Client) Stream(g *gin.Context) {
 		return
 	}
 
+	if c.forceProxy {
+		b.Type = stream.MPEG2TS
+		b.Proxy = true
+	}
+
 	// validate query
 	if b.Channel == 0 {
 		g.AbortWithError(http.StatusBadRequest, errors.New("channel was not parsed"))

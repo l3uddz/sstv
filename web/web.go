@@ -11,14 +11,17 @@ import (
 )
 
 type Client struct {
-	ss *smoothstreams.Client
+	ss         *smoothstreams.Client
+	forceProxy bool
 
 	log zerolog.Logger
 }
 
-func New(ss *smoothstreams.Client) *Client {
+func New(ss *smoothstreams.Client, forceProxy bool) *Client {
 	return &Client{
-		ss:  ss,
+		ss:         ss,
+		forceProxy: forceProxy,
+
 		log: logger.New(""),
 	}
 }

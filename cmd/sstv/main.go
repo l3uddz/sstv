@@ -40,9 +40,10 @@ var (
 		Log       string `type:"path" default:"${log_file}" short:"l" env:"APP_LOG" help:"Log file path"`
 		Verbosity int    `type:"counter" default:"0" short:"v" env:"APP_VERBOSITY" help:"Log level verbosity"`
 
-		Host string `type:"string" default:"0.0.0.0" short:"h" env:"APP_HOST" help:"Host to listen on"`
-		Port int    `type:"number" default:"1411" short:"p" env:"APP_PORT" help:"Port to listen on"`
-		SSDP bool   `negatable type:"bool" default:"true" env:"APP_SSDP"  help:"SSDP advertise"`
+		Host       string `type:"string" default:"0.0.0.0" short:"h" env:"APP_HOST" help:"Host to listen on"`
+		Port       int    `type:"number" default:"1411" short:"p" env:"APP_PORT" help:"Port to listen on"`
+		ForceProxy bool   `type:"bool" default:"false" env:"APP_FORCE_PROXY"  help:"Force proxy of streams"`
+		SSDP       bool   `negatable type:"bool" default:"true" env:"APP_SSDP"  help:"SSDP advertise"`
 	}
 )
 
@@ -139,7 +140,7 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 
 	r := gin.New()
-	wc := web.New(ss)
+	wc := web.New(ss, cli.ForceProxy)
 
 	r.Use(gin.Recovery())
 	r.Use(cors.Default())
