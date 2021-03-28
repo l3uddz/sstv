@@ -29,7 +29,7 @@ func New(ss *smoothstreams.Client, forceProxy bool) *Client {
 func (c *Client) SetHandlers(r *gin.Engine) {
 	// core
 	r.GET("/playlist.m3u8", c.Playlist)
-	r.GET("/stream.m3u8", c.WithSanitizedRawQuery(c.Stream))
+	r.GET("/stream/:channel", c.WithSanitizedRawQuery(c.Stream))
 	r.GET("/epg.xml", c.EPG)
 	// plex
 	r.GET("/lineup.json", c.Lineup)

@@ -21,7 +21,7 @@ func (c *Client) Get() (string, error) {
 	}
 
 	// generate token request url
-	tokenUrl, err := sstv.URLWithQuery(c.authUrl(), url.Values{
+	tokenURL, err := sstv.URLWithQuery(c.authURL(), url.Values{
 		"username": []string{c.Username},
 		"password": []string{c.Password},
 		"site":     []string{c.Site},
@@ -31,11 +31,11 @@ func (c *Client) Get() (string, error) {
 	}
 
 	c.log.Trace().
-		Str("url", tokenUrl).
+		Str("url", tokenURL).
 		Msg("Requesting token")
 
 	// create token request
-	resp, err := rek.Get(tokenUrl, rek.Timeout(c.timeout), rek.UserAgent(build.UserAgent))
+	resp, err := rek.Get(tokenURL, rek.Timeout(c.timeout), rek.UserAgent(build.UserAgent))
 	if err != nil {
 		return c.hash, fmt.Errorf("request token: %w", err)
 	}

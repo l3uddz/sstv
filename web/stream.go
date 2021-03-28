@@ -16,8 +16,12 @@ func (c *Client) Stream(g *gin.Context) {
 	// parse query
 	b := new(struct {
 		guide.PlaylistOptions
-		Channel int `form:"channel"`
+		Channel int `uri:"channel" binding:"required"`
 	})
+
+	if err := g.ShouldBindUri(b); err != nil {
+		g.AbortWithError(http.StatusBadRequest, fmt.Errorf("bind uri: %w", err))
+	}
 
 	if err := g.ShouldBindQuery(b); err != nil {
 		g.AbortWithError(http.StatusBadRequest, fmt.Errorf("bind query: %w", err))

@@ -58,9 +58,7 @@ func (c *Client) GeneratePlaylist(opts *PlaylistOptions) (string, error) {
 		}
 
 		// prepare channel stream url
-		args.Set("channel", channel.Number)
-
-		channelURL, err := sstv.URLWithQuery(sstv.JoinURL(c.publicURL, "stream.m3u8"), args)
+		channelURL, err := sstv.URLWithQuery(sstv.JoinURL(c.publicURL, "stream", channel.Number), args)
 		if err != nil {
 			return "", fmt.Errorf("generate channel url: %w", err)
 		}
@@ -108,9 +106,7 @@ func (c *Client) GenerateLineup(opts *PlaylistOptions) (string, error) {
 		}
 
 		// prepare channel stream url
-		args.Set("channel", channel.Number)
-
-		channelURL, err := sstv.URLWithQuery(sstv.JoinURL(c.publicURL, "stream.m3u8"), args)
+		channelURL, err := sstv.URLWithQuery(sstv.JoinURL(c.publicURL, "stream", channel.Number), args)
 		if err != nil {
 			return "", fmt.Errorf("generate channel url: %w", err)
 		}
