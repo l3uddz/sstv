@@ -16,10 +16,19 @@ func (c *Client) EPG(g *gin.Context) {
 		return
 	}
 
-	// generate epg
-	epg, err := c.ss.Guide.GenerateEPG(b)
+	// generate epg (singleflight)
+	v, err, _ := c.sfg.Do(g.Request.RequestURI, func() (interface{}, error) {
+		return c.ss.Guide.GenerateEPG(b)
+	})
 	if err != nil {
 		g.AbortWithError(http.StatusInternalServerError, fmt.Errorf("generate epg: %w", err))
+		return
+	}
+
+	// typecast result
+	epg, ok := v.(string)
+	if !ok {
+		g.AbortWithError(http.StatusInternalServerError, fmt.Errorf("typecast epg result"))
 		return
 	}
 
