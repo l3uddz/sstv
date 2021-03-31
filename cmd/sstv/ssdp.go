@@ -39,11 +39,13 @@ func startSSDP(deviceID string, publicURL string, ctx context.Context) error {
 			}
 		}()
 
-		heartbeat := time.Tick(15 * time.Second)
 		// advertise presence
+		heartbeat := time.NewTicker(60 * time.Second)
+		defer heartbeat.Stop()
+
 		for {
 			select {
-			case <-heartbeat:
+			case <-heartbeat.C:
 				if err := a.Alive(); err != nil {
 					log.Error().
 						Err(err).
