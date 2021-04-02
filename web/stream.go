@@ -21,6 +21,7 @@ func (c *Client) Stream(g *gin.Context) {
 
 	if err := g.ShouldBindUri(b); err != nil {
 		g.AbortWithError(http.StatusBadRequest, fmt.Errorf("bind uri: %w", err))
+		return
 	}
 
 	if err := g.ShouldBindQuery(b); err != nil {

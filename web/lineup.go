@@ -19,6 +19,7 @@ func (c *Client) Lineup(g *gin.Context) {
 	lineup, err := c.ss.Guide.GenerateLineup(b)
 	if err != nil {
 		g.AbortWithError(http.StatusInternalServerError, fmt.Errorf("generate lineup: %w", err))
+		return
 	}
 
 	// return lineup
@@ -30,6 +31,7 @@ func (c *Client) LineupStatus(g *gin.Context) {
 	lineupStatus, err := c.ss.Guide.GenerateLineupStatus()
 	if err != nil {
 		g.AbortWithError(http.StatusInternalServerError, fmt.Errorf("generate lineup_status: %w", err))
+		return
 	}
 
 	// return lineup_status

@@ -20,6 +20,7 @@ func (c *Client) Playlist(g *gin.Context) {
 	playlist, err := c.ss.Guide.GeneratePlaylist(b)
 	if err != nil {
 		g.AbortWithError(http.StatusInternalServerError, fmt.Errorf("generate playlist: %w", err))
+		return
 	}
 
 	// return playlist

@@ -11,6 +11,7 @@ func (c *Client) Device(g *gin.Context) {
 	device, err := c.ss.Guide.GenerateDevice()
 	if err != nil {
 		g.AbortWithError(http.StatusInternalServerError, fmt.Errorf("generate device: %w", err))
+		return
 	}
 
 	// return device
