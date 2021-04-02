@@ -76,7 +76,8 @@ func (c *Client) Logger() gin.HandlerFunc {
 		l := time.Since(t)
 
 		// log errors
-		if len(g.Errors) > 0 {
+		switch {
+		case len(g.Errors) > 0:
 			errors := make([]error, 0)
 			for _, err := range g.Errors {
 				errors = append(errors, err.Err)
@@ -84,6 +85,13 @@ func (c *Client) Logger() gin.HandlerFunc {
 
 			rl.Error().
 				Errs("errors", errors).
+				Int("status", g.Writer.Status()).
+				Str("duration", l.String()).
+				Msg("Request failed")
+			return
+
+		case g.Writer.Status() >= 400 && g.Writer.Status() <= 599:
+			rl.Error().
 				Int("status", g.Writer.Status()).
 				Str("duration", l.String()).
 				Msg("Request failed")
