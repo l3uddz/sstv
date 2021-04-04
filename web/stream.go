@@ -65,6 +65,7 @@ func (c *Client) Stream(g *gin.Context) {
 		g.AbortWithError(http.StatusInternalServerError, fmt.Errorf("get proxy stream: %w", err))
 		return
 	}
+	defer resp.Body().Close()
 
 	if resp.StatusCode() != http.StatusOK {
 		g.AbortWithError(http.StatusServiceUnavailable, fmt.Errorf("get proxy stream: %s", resp.Status()))
