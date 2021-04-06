@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/l3uddz/sstv/build"
 	"github.com/lucperkins/rek"
+	"net/http"
 	"sort"
 	"strconv"
 )
@@ -43,7 +44,7 @@ func (c *Client) GetChannels() ([]Channel, error) {
 	defer resp.Body().Close()
 
 	// validate response
-	if resp.StatusCode() != 200 {
+	if resp.StatusCode() != http.StatusOK {
 		return nil, fmt.Errorf("validate channels response: %s", resp.Status())
 	}
 

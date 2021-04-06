@@ -6,6 +6,7 @@ import (
 	"github.com/l3uddz/sstv"
 	"github.com/l3uddz/sstv/build"
 	"github.com/lucperkins/rek"
+	"net/http"
 	"net/url"
 	"time"
 )
@@ -42,7 +43,7 @@ func (c *Client) Get() (string, error) {
 	defer resp.Body().Close()
 
 	// validate token response
-	if resp.StatusCode() != 200 {
+	if resp.StatusCode() != http.StatusOK {
 		return c.hash, fmt.Errorf("validate token response: %s", resp.Status())
 	}
 
