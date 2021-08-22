@@ -20,18 +20,18 @@ func (c *Client) Stream(g *gin.Context) {
 	})
 
 	if err := g.ShouldBindUri(b); err != nil {
-		g.AbortWithError(http.StatusBadRequest, fmt.Errorf("bind uri: %w", err))
+		_ = g.AbortWithError(http.StatusBadRequest, fmt.Errorf("bind uri: %w", err))
 		return
 	}
 
 	if err := g.ShouldBindQuery(b); err != nil {
-		g.AbortWithError(http.StatusBadRequest, fmt.Errorf("bind query: %w", err))
+		_ = g.AbortWithError(http.StatusBadRequest, fmt.Errorf("bind query: %w", err))
 		return
 	}
 
 	// validate request
 	if b.Channel == 0 {
-		g.AbortWithError(http.StatusBadRequest, errors.New("channel was not parsed"))
+		_ = g.AbortWithError(http.StatusBadRequest, errors.New("channel was not parsed"))
 		return
 	}
 
@@ -44,7 +44,7 @@ func (c *Client) Stream(g *gin.Context) {
 	// get stream link
 	cl, err := c.ss.Stream.GetLink(b.Channel, b.Server, b.Type)
 	if err != nil {
-		g.AbortWithError(http.StatusInternalServerError,
+		_ = g.AbortWithError(http.StatusInternalServerError,
 			fmt.Errorf("get stream link: %d.%d: %w", b.Channel, b.Type, err))
 		return
 	}
@@ -55,20 +55,20 @@ func (c *Client) Stream(g *gin.Context) {
 		return
 	} else if b.Type != stream.MPEG2TS {
 		// we can only proxy MPEG2TS streams
-		g.AbortWithError(http.StatusUnsupportedMediaType, errors.New("stream type cannot be proxied"))
+		_ = g.AbortWithError(http.StatusUnsupportedMediaType, errors.New("stream type cannot be proxied"))
 		return
 	}
 
 	// proxy stream link
 	resp, err := rek.Get(cl, rek.UserAgent(build.UserAgent))
 	if err != nil {
-		g.AbortWithError(http.StatusInternalServerError, fmt.Errorf("get proxy stream: %w", err))
+		_ = g.AbortWithError(http.StatusInternalServerError, fmt.Errorf("get proxy stream: %w", err))
 		return
 	}
 	defer resp.Body().Close()
 
 	if resp.StatusCode() != http.StatusOK {
-		g.AbortWithError(http.StatusServiceUnavailable, fmt.Errorf("get proxy stream: %s", resp.Status()))
+		_ = g.AbortWithError(http.StatusServiceUnavailable, fmt.Errorf("get proxy stream: %s", resp.Status()))
 		return
 	}
 

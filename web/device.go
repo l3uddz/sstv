@@ -10,7 +10,7 @@ func (c *Client) Device(g *gin.Context) {
 	// generate device
 	device, err := c.ss.Guide.GenerateDevice()
 	if err != nil {
-		g.AbortWithError(http.StatusInternalServerError, fmt.Errorf("generate device: %w", err))
+		_ = g.AbortWithError(http.StatusInternalServerError, fmt.Errorf("generate device: %w", err))
 		return
 	}
 

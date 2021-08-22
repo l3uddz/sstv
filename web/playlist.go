@@ -12,14 +12,14 @@ func (c *Client) Playlist(g *gin.Context) {
 	b := new(guide.PlaylistOptions)
 
 	if err := g.ShouldBindQuery(b); err != nil {
-		g.AbortWithError(http.StatusBadRequest, fmt.Errorf("bind query: %w", err))
+		_ = g.AbortWithError(http.StatusBadRequest, fmt.Errorf("bind query: %w", err))
 		return
 	}
 
 	// generate playlist
 	playlist, err := c.ss.Guide.GeneratePlaylist(b)
 	if err != nil {
-		g.AbortWithError(http.StatusInternalServerError, fmt.Errorf("generate playlist: %w", err))
+		_ = g.AbortWithError(http.StatusInternalServerError, fmt.Errorf("generate playlist: %w", err))
 		return
 	}
 

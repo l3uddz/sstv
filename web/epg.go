@@ -12,7 +12,7 @@ func (c *Client) EPG(g *gin.Context) {
 	b := new(guide.EpgOptions)
 
 	if err := g.ShouldBindQuery(b); err != nil {
-		g.AbortWithError(http.StatusBadRequest, fmt.Errorf("bind query: %w", err))
+		_ = g.AbortWithError(http.StatusBadRequest, fmt.Errorf("bind query: %w", err))
 		return
 	}
 
@@ -21,14 +21,14 @@ func (c *Client) EPG(g *gin.Context) {
 		return c.ss.Guide.GenerateEPG(b)
 	})
 	if err != nil {
-		g.AbortWithError(http.StatusInternalServerError, fmt.Errorf("generate epg: %w", err))
+		_ = g.AbortWithError(http.StatusInternalServerError, fmt.Errorf("generate epg: %w", err))
 		return
 	}
 
 	// typecast result
 	epg, ok := v.(string)
 	if !ok {
-		g.AbortWithError(http.StatusInternalServerError, fmt.Errorf("typecast epg result"))
+		_ = g.AbortWithError(http.StatusInternalServerError, fmt.Errorf("typecast epg result"))
 		return
 	}
 
